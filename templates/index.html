@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data Visualizer</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #243447;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        button {
+            margin-top: 25px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .chart {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Stock Data Visualizer</h1>
+
+        <form method="POST">
+
+            
+    <label for="symbol">Select Stock</label>
+    <select id="symbol" name="symbol" required>
+            {% for stock in stocks %}
+        <option value="{{ stock.symbol }}"
+            {% if stock.symbol == selected_symbol %}selected{% endif %}>
+            {{ stock.symbol }} - {{ stock.name }}
+        </option>
+         {% endfor %}
+    </select>
+
+
+            <label for="chart_type">Chart Type</label>
+            <select id="chart_type" name="chart_type">
+                <option value="line" {% if selected_chart == "line" %}selected{% endif %}>Line Chart</option>
+                <option value="bar" {% if selected_chart == "bar" %}selected{% endif %}>Bar Chart</option>
+            </select>
+
+            
+            <label for="start_date">Start Date</label>
+            <input type="date" id="start_date" name="start_date"
+                    value="{{ selected_start }}" required>
+
+            <label for="end_date">End Date</label>
+            <input type="date" id="end_date" name="end_date"
+                    value="{{ selected_end }}" required>
+
+
+            <button type="submit">Generate Chart</button>
+        </form>
+
+        <div class="chart">
+
+        {% if error %}
+             <p style="color: red; margin-top: 20px;">
+              {{ error }}
+        </p>
+        {% endif %}
+
+            {% if chart_html %}
+                {{ chart_html | safe }}
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>
