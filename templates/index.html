@@ -1,52 +1,79 @@
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Stock Data Visualizer</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
+            background-color: #f3f5f8;
             margin: 0;
-            padding: 40px 20px;
+            padding: 30px 20px;
+            color: #243447;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         h1 {
             text-align: center;
             color: #243447;
+            margin-bottom: 30px;
+            font-size: 30px;
         }
 
         label {
             display: block;
-            margin-top: 18px;
-            margin-bottom: 6px;
+            margin-top: 20px;
+            margin-bottom: 8px;
             font-weight: bold;
+            color: #222;
         }
 
-        select, input, button {
+        select,
+        input {
+            display: block;
             width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
             font-size: 15px;
+            color: #333;
+        }
+
+        select:focus,
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
         }
 
         button {
-            margin-top: 25px;
+            display: block;
+            width: 100%;
+            margin-top: 28px;
+            padding: 13px;
             background-color: #2563eb;
             color: white;
             border: none;
             border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
         }
 
@@ -54,62 +81,160 @@
             background-color: #1d4ed8;
         }
 
+        .error {
+            color: #b91c1c;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 13px;
+            margin-top: 25px;
+            border-radius: 5px;
+        }
+
         .chart {
-            margin-top: 30px;
+            margin-top: 35px;
+            width: 100%;
+        }
+
+        .info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 
 <body>
+
     <div class="container">
+
         <h1>Stock Data Visualizer</h1>
 
-        <form method="POST">
+        <form method="POST" action="/">
 
-            
-    <label for="symbol">Select Stock</label>
-    <select id="symbol" name="symbol" required>
-            {% for stock in stocks %}
-        <option value="{{ stock.symbol }}"
-            {% if stock.symbol == selected_symbol %}selected{% endif %}>
-            {{ stock.symbol }} - {{ stock.name }}
-        </option>
-         {% endfor %}
-    </select>
+            <!-- Stock Symbol -->
+            <label for="symbol">Select Stock</label>
 
+            <select id="symbol" name="symbol" required>
+                <option value="" disabled
+                    {% if not selected_symbol %}selected{% endif %}>
+                    -- Select a Stock --
+                </option>
 
-            <label for="chart_type">Chart Type</label>
-            <select id="chart_type" name="chart_type">
-                <option value="line" {% if selected_chart == "line" %}selected{% endif %}>Line Chart</option>
-                <option value="bar" {% if selected_chart == "bar" %}selected{% endif %}>Bar Chart</option>
+                {% for stock in stocks %}
+                <option value="{{ stock.symbol }}"
+                    {% if stock.symbol == selected_symbol %}selected{% endif %}>
+                    {{ stock.symbol }} - {{ stock.name }}
+                </option>
+                {% endfor %}
             </select>
 
-            
+
+            <!-- Chart Type -->
+            <label for="chart_type">Chart Type</label>
+
+            <select id="chart_type" name="chart_type" required>
+
+                <option value="line"
+                    {% if selected_chart == "line" %}selected{% endif %}>
+                    Line Chart
+                </option>
+
+                <option value="bar"
+                    {% if selected_chart == "bar" %}selected{% endif %}>
+                    Bar Chart
+                </option>
+
+            </select>
+
+
+            <!-- Time Series -->
+            <label for="time_series">Time Series</label>
+
+            <select id="time_series" name="time_series" required>
+
+                <option value="daily"
+                    {% if selected_series == "daily" %}selected{% endif %}>
+                    Daily
+                </option>
+
+                <option value="weekly"
+                    {% if selected_series == "weekly" %}selected{% endif %}>
+                    Weekly
+                </option>
+
+                <option value="monthly"
+                    {% if selected_series == "monthly" %}selected{% endif %}>
+                    Monthly
+                </option>
+
+            </select>
+
+
+            <!-- Start Date -->
             <label for="start_date">Start Date</label>
-            <input type="date" id="start_date" name="start_date"
-                    value="{{ selected_start }}" required>
 
+            <input
+                type="date"
+                id="start_date"
+                name="start_date"
+                value="{{ selected_start }}"
+                required
+            >
+
+
+            <!-- End Date -->
             <label for="end_date">End Date</label>
-            <input type="date" id="end_date" name="end_date"
-                    value="{{ selected_end }}" required>
+
+            <input
+                type="date"
+                id="end_date"
+                name="end_date"
+                value="{{ selected_end }}"
+                required
+            >
 
 
-            <button type="submit">Generate Chart</button>
+            <!-- Submit Button -->
+            <button type="submit">
+                Generate Chart
+            </button>
+
         </form>
 
-        <div class="chart">
 
+        <!-- Error Message -->
         {% if error %}
-             <p style="color: red; margin-top: 20px;">
-              {{ error }}
-        </p>
+        <div class="error" role="alert">
+            {{ error }}
+        </div>
         {% endif %}
 
-            {% if chart_html %}
-                {{ chart_html | safe }}
-            {% endif %}
+
+        <!-- Stock Chart -->
+        {% if chart_html %}
+        <div class="chart">
+            {{ chart_html | safe }}
         </div>
+        {% endif %}
+
+
+        <p class="info">
+            Stock market data provided by Alpha Vantage.
+            Historical data availability depends on the API plan.
+        </p>
 
     </div>
+
 </body>
 </html>
